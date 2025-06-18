@@ -2,10 +2,16 @@ let currentScreen = 1;
 const totalScreens = 14;
 
 function showScreen(screenNumber) {
+    // Hide all screens first
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
-    document.getElementById(`screen${screenNumber}`).classList.add('active');
+    
+    // Show the target screen
+    const targetScreen = document.getElementById(`screen${screenNumber}`);
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+    }
 }
 
 function nextScreen() {
@@ -25,22 +31,28 @@ function previousScreen() {
 }
 
 function selectFrequency(button) {
-    document.querySelectorAll('#screen2 .option-button').forEach(btn => {
+    // Remove selection from all buttons in the container
+    button.closest('.options-container').querySelectorAll('.option-button').forEach(btn => {
         btn.classList.remove('selected');
     });
+    // Add selection to clicked button
     button.classList.add('selected');
     setTimeout(() => nextScreen(), 500);
 }
 
 function selectImprovement(card) {
+    // Toggle selection on the clicked card
     card.classList.toggle('selected');
+    // Check if any cards are selected to enable/disable continue button
     const selectedCards = document.querySelectorAll('#screen3 .option-card.selected');
     const continueButton = document.getElementById('continueBtn3');
-    continueButton.disabled = selectedCards.length === 0;
+    if (continueButton) {
+        continueButton.disabled = selectedCards.length === 0;
+    }
 }
 
 function selectGoal(button) {
-    document.querySelectorAll('#screen4 .option-button').forEach(btn => {
+    button.closest('.options-container').querySelectorAll('.option-button').forEach(btn => {
         btn.classList.remove('selected');
     });
     button.classList.add('selected');
@@ -51,11 +63,13 @@ function selectChallenge(button) {
     button.classList.toggle('selected');
     const selectedButtons = document.querySelectorAll('#screen5 .option-button.selected');
     const continueButton = document.getElementById('continueBtn5');
-    continueButton.disabled = selectedButtons.length === 0;
+    if (continueButton) {
+        continueButton.disabled = selectedButtons.length === 0;
+    }
 }
 
-function selectAgreement(button, value) {
-    document.querySelectorAll('#screen6 .agreement-button').forEach(btn => {
+function selectAgreement(button) {
+    button.closest('.agreement-options').querySelectorAll('.agreement-button').forEach(btn => {
         btn.classList.remove('selected');
     });
     button.classList.add('selected');
@@ -63,7 +77,7 @@ function selectAgreement(button, value) {
 }
 
 function selectHardestPart(button) {
-    document.querySelectorAll('#screen7 .option-button').forEach(btn => {
+    button.closest('.options-container').querySelectorAll('.option-button').forEach(btn => {
         btn.classList.remove('selected');
     });
     button.classList.add('selected');
@@ -74,11 +88,13 @@ function selectUsage(button) {
     button.classList.toggle('selected');
     const selectedButtons = document.querySelectorAll('#screen9 .option-button.selected');
     const continueButton = document.getElementById('continueBtn9');
-    continueButton.disabled = selectedButtons.length === 0;
+    if (continueButton) {
+        continueButton.disabled = selectedButtons.length === 0;
+    }
 }
 
 function selectField(button) {
-    document.querySelectorAll('#screen10 .option-button').forEach(btn => {
+    button.closest('.options-container').querySelectorAll('.option-button').forEach(btn => {
         btn.classList.remove('selected');
     });
     button.classList.add('selected');
@@ -86,7 +102,7 @@ function selectField(button) {
 }
 
 function selectAge(card) {
-    document.querySelectorAll('#screen12 .option-card').forEach(c => {
+    card.closest('.options-grid').querySelectorAll('.option-card').forEach(c => {
         c.classList.remove('selected');
     });
     card.classList.add('selected');
@@ -94,7 +110,7 @@ function selectAge(card) {
 }
 
 function selectGender(card) {
-    document.querySelectorAll('#screen13 .gender-card').forEach(c => {
+    card.closest('.gender-options').querySelectorAll('.gender-card').forEach(c => {
         c.classList.remove('selected');
     });
     card.classList.add('selected');
@@ -102,7 +118,7 @@ function selectGender(card) {
 }
 
 function selectLanguage(button) {
-    document.querySelectorAll('#screen14 .option-button').forEach(btn => {
+    button.closest('.options-container').querySelectorAll('.option-button').forEach(btn => {
         btn.classList.remove('selected');
     });
     button.classList.add('selected');

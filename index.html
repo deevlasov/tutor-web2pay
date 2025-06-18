@@ -66,8 +66,65 @@
         </div>
     </div>
 
+    <!-- Screen 3: Improvement Areas -->
+    <div class="screen" id="screen3">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 23%;"></div>
+            </div>
+        </div>
+
+        <div class="screen3-content">
+            <h1 class="question-title">
+                What part of your English<br>
+                do you want to improve the most?
+            </h1>
+
+            <div class="options-grid">
+                <div class="option-card" onclick="selectImprovement(this)">
+                    <div class="selection-indicator"></div>
+                    <span class="option-icon">🗣️</span>
+                    <div class="option-text">Speaking with confidence</div>
+                </div>
+                
+                <div class="option-card" onclick="selectImprovement(this)">
+                    <div class="selection-indicator"></div>
+                    <span class="option-icon">👄</span>
+                    <div class="option-text">Improving pronunciation</div>
+                </div>
+                
+                <div class="option-card" onclick="selectImprovement(this)">
+                    <div class="selection-indicator"></div>
+                    <span class="option-icon">💡</span>
+                    <div class="option-text">Expanding vocabulary</div>
+                </div>
+                
+                <div class="option-card" onclick="selectImprovement(this)">
+                    <div class="selection-indicator"></div>
+                    <span class="option-icon">✏️</span>
+                    <div class="option-text">Using grammar correctly</div>
+                </div>
+                
+                <div class="option-card" onclick="selectImprovement(this)">
+                    <div class="selection-indicator"></div>
+                    <span class="option-icon">💡</span>
+                    <div class="option-text">Understanding native speakers</div>
+                </div>
+                
+                <div class="option-card" onclick="selectImprovement(this)">
+                    <div class="selection-indicator"></div>
+                    <span class="option-icon">📝</span>
+                    <div class="option-text">Writing more fluently</div>
+                </div>
+            </div>
+
+            <button class="continue-button" id="continueBtn3" onclick="nextScreen()" disabled>Continue</button>
+        </div>
+    </div>
+
     <!-- Additional screens... -->
-    <!-- Screen 3-14 content here -->
+    <!-- Screen 4-14 content here -->
 
     <script src="js/app.js"></script>
 </body>
