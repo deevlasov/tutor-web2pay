@@ -123,8 +123,106 @@
         </div>
     </div>
 
+    <!-- Screen 4: Main Goal -->
+    <div class="screen" id="screen4">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 31%;"></div>
+            </div>
+        </div>
+
+        <div class="screen2-content">
+            <h1 class="question-title">
+                What is your main goal for<br>
+                improving your English?
+            </h1>
+
+            <div class="options-container">
+                <button class="option-button" onclick="selectGoal(this)">
+                    <span class="option-icon-inline">💼</span>
+                    Speak confidently at work
+                </button>
+                <button class="option-button" onclick="selectGoal(this)">
+                    <span class="option-icon-inline">🏢</span>
+                    Find a new job
+                </button>
+                <button class="option-button" onclick="selectGoal(this)">
+                    <span class="option-icon-inline">🌍</span>
+                    Live comfortably abroad
+                </button>
+                <button class="option-button" onclick="selectGoal(this)">
+                    <span class="option-icon-inline">✈️</span>
+                    Travel with ease
+                </button>
+                <button class="option-button" onclick="selectGoal(this)">
+                    <span class="option-icon-inline">🚀</span>
+                    Expand my skills
+                </button>
+                <button class="option-button" onclick="selectGoal(this)">
+                    <span class="option-icon-inline">👥</span>
+                    Connect with family & friends
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 5: Speaking Challenges -->
+    <div class="screen" id="screen5">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 38%;"></div>
+            </div>
+        </div>
+
+        <div class="screen2-content">
+            <h1 class="question-title">
+                What's stopping you<br>
+                when you speak English?
+            </h1>
+
+            <p class="subtitle">Select all that apply</p>
+
+            <div class="options-container">
+                <button class="option-button multi-select" onclick="selectChallenge(this)">
+                    <span class="option-icon-inline">😰</span>
+                    I freeze when I speak
+                    <span class="multi-select-indicator"></span>
+                </button>
+                <button class="option-button multi-select" onclick="selectChallenge(this)">
+                    <span class="option-icon-inline">💭</span>
+                    I can't express myself
+                    <span class="multi-select-indicator"></span>
+                </button>
+                <button class="option-button multi-select" onclick="selectChallenge(this)">
+                    <span class="option-icon-inline">🗣️</span>
+                    My accent isn't clear
+                    <span class="multi-select-indicator"></span>
+                </button>
+                <button class="option-button multi-select" onclick="selectChallenge(this)">
+                    <span class="option-icon-inline">📚</span>
+                    Grammar mistakes
+                    <span class="multi-select-indicator"></span>
+                </button>
+                <button class="option-button multi-select" onclick="selectChallenge(this)">
+                    <span class="option-icon-inline">⏱️</span>
+                    Can't reply quickly
+                    <span class="multi-select-indicator"></span>
+                </button>
+                <button class="option-button multi-select" onclick="selectChallenge(this)">
+                    <span class="option-icon-inline">🚫</span>
+                    None of the above
+                    <span class="multi-select-indicator"></span>
+                </button>
+            </div>
+
+            <button class="continue-button" id="continueBtn5" onclick="nextScreen()" disabled>Continue</button>
+        </div>
+    </div>
+
     <!-- Additional screens... -->
-    <!-- Screen 4-14 content here -->
+    <!-- Screen 6-14 content here -->
 
     <script src="js/app.js"></script>
 </body>
