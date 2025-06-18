@@ -1,5 +1,5 @@
 let currentScreen = 1;
-const totalScreens = 14;
+const totalScreens = 15;
 
 function showScreen(screenNumber) {
     // Hide all screens first
