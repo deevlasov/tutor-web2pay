@@ -1,5 +1,5 @@
 let currentScreen = 1;
-const totalScreens = 19;
+const totalScreens = 20;
 
 function showScreen(screenNumber) {
     // Hide all screens first
@@ -160,6 +160,17 @@ window.selectAgreement2 = function(button) {
     });
     button.classList.add('selected');
     setTimeout(() => nextScreen(), 500);
+}
+
+window.selectLanguageLevel = function(button) {
+    button.closest('.options-container').querySelectorAll('.option-button').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    button.classList.add('selected');
+    const continueButton = document.getElementById('continueBtn18');
+    if (continueButton) {
+        continueButton.disabled = false;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
