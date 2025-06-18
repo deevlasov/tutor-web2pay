@@ -152,4 +152,22 @@ window.selectSpeakingFeeling = function(card) {
     if (continueButton) {
         continueButton.disabled = false;
     }
-} 
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Attach event listeners for speaking feeling screen (screen14)
+    var screen14 = document.getElementById('screen14');
+    if (screen14) {
+        var cards = screen14.querySelectorAll('.option-card');
+        cards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                cards.forEach(function(c) { c.classList.remove('selected'); });
+                card.classList.add('selected');
+                var continueButton = document.getElementById('continueBtn14');
+                if (continueButton) {
+                    continueButton.disabled = false;
+                }
+            });
+        });
+    }
+}); 
