@@ -475,8 +475,31 @@
         </div>
     </div>
 
-    <!-- Screen 12: Native Language (was 14) -->
+    <!-- Screen 12: Current Improvement Methods -->
     <div class="screen" id="screen12">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 97%;"></div>
+            </div>
+        </div>
+        <div class="screen2-content">
+            <h1 class="question-title">How are you currently improving your English?</h1>
+            <p class="subtitle">Select all that apply</p>
+            <div class="options-container">
+                <button class="option-button multi-select" onclick="selectImprovementMethod(this)"><span class="option-icon-inline">📚</span>Classes or courses<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectImprovementMethod(this)"><span class="option-icon-inline">🎯</span>Learning apps<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectImprovementMethod(this)"><span class="option-icon-inline">🎬</span>Videos or movies<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectImprovementMethod(this)"><span class="option-icon-inline">🎧</span>Podcasts or audiobooks<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectImprovementMethod(this)"><span class="option-icon-inline">🤝</span>Speaking with others<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectImprovementMethod(this)"><span class="option-icon-inline">❌</span>Not learning right now<span class="multi-select-indicator"></span></button>
+            </div>
+            <button class="continue-button" id="continueBtn12" onclick="nextScreen()" disabled>Continue</button>
+        </div>
+    </div>
+
+    <!-- Screen 13: Native Language (was 12) -->
+    <div class="screen" id="screen13">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">
