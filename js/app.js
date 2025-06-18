@@ -154,6 +154,14 @@ window.selectSpeakingFeeling = function(card) {
     }
 }
 
+window.selectAgreement2 = function(button) {
+    button.closest('.agreement-options').querySelectorAll('.agreement-button').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    button.classList.add('selected');
+    setTimeout(() => nextScreen(), 500);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Attach event listeners for speaking feeling screen (screen14)
     var screen14 = document.getElementById('screen14');
