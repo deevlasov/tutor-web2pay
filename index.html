@@ -594,8 +594,71 @@
             <button class="continue-button" id="continueBtn16" onclick="nextScreen()" disabled>Continue</button>
         </div>
     </div>
-    <!-- Screen 17: Native Language (last) -->
+    <!-- Screen 17: 70% Stats Screen (moved) -->
     <div class="screen" id="screen17">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="screen2-content">
+            <h1 class="question-title" style="margin-bottom: 40px;">Feel you 👑</h1>
+            <div style="position: relative; margin-bottom: 40px;">
+                <div style="font-size: 120px; font-weight: 700; color: rgba(255,255,255,0.1); text-align: center; margin-bottom: -20px;">70%</div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; max-width: 400px; margin: 0 auto; backdrop-filter: blur(10px);">
+                    <p style="color: #ccc; font-size: 16px; line-height: 1.5; margin-bottom: 20px;">In fact, according to Cambridge English, 70% of learners say spontaneous speaking is the hardest part — even after years of study, they still struggle to respond quickly in real conversations.</p>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+                        <div style="width: 24px; height: 24px; background: #d2691e; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 12px;">🎓</span>
+                        </div>
+                        <span style="color: #888; font-size: 14px; font-weight: 500;">Cambridge English</span>
+                    </div>
+                    <div style="background: #4a9eff; border-radius: 15px; padding: 20px; position: relative;">
+                        <p style="color: white; font-size: 15px; line-height: 1.4; margin: 0;">The best way to get better at speaking... is actually speaking. That's why Fluently is built for real conversations.</p>
+                        <div style="position: absolute; bottom: -8px; left: 30px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #4a9eff;"></div>
+                    </div>
+                    <div style="text-align: right; margin-top: 10px;">
+                        <span style="color: #666; font-size: 12px; font-weight: 500;">FLUENTLY TEAM</span>
+                    </div>
+                </div>
+            </div>
+            <button class="continue-button" onclick="nextScreen()">Continue</button>
+        </div>
+    </div>
+    <!-- Screen 18: Agreement Statement 2 (shifted) -->
+    <div class="screen" id="screen18">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="screen2-content">
+            <p class="agreement-prompt">Do you agree with the statement below?</p>
+            <h1 class="statement-text">
+                I feel uncomfortable<br>
+                speaking English because<br>
+                I don't practice enough.
+            </h1>
+            <div class="agreement-options">
+                <button class="agreement-button no-button" onclick="selectAgreement2(this)">
+                    <span class="agreement-icon">❌</span>
+                    <span class="agreement-label">No</span>
+                </button>
+                <button class="agreement-button maybe-button" onclick="selectAgreement2(this)">
+                    <span class="agreement-icon">🤷‍♀️</span>
+                    <span class="agreement-label">Maybe</span>
+                </button>
+                <button class="agreement-button yes-button" onclick="selectAgreement2(this)">
+                    <span class="agreement-icon">✅</span>
+                    <span class="agreement-label">Yes</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Screen 19: Native Language (last) -->
+    <div class="screen" id="screen19">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">
