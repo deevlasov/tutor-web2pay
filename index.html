@@ -498,8 +498,32 @@
         </div>
     </div>
 
-    <!-- Screen 13: Native Language (was 12) -->
+    <!-- Screen 13: Main Challenges -->
     <div class="screen" id="screen13">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 99%;"></div>
+            </div>
+        </div>
+        <div class="screen2-content">
+            <h1 class="question-title">What are the main challenges for you in learning English?</h1>
+            <p class="subtitle">Select all that apply</p>
+            <div class="options-container">
+                <button class="option-button multi-select" onclick="selectLearningChallenge(this)"><span class="option-icon-inline">⏳</span>Finding time<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectLearningChallenge(this)"><span class="option-icon-inline">💤</span>Staying motivated<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectLearningChallenge(this)"><span class="option-icon-inline">😶</span>Few chances to speak<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectLearningChallenge(this)"><span class="option-icon-inline">🧠</span>Remembering lessons<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectLearningChallenge(this)"><span class="option-icon-inline">😰</span>Feeling nervous speaking<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectLearningChallenge(this)"><span class="option-icon-inline">🧱</span>English feels too hard<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectLearningChallenge(this)"><span class="option-icon-inline">😎</span>No struggle — I'm doing great!<span class="multi-select-indicator"></span></button>
+            </div>
+            <button class="continue-button" id="continueBtn13" onclick="nextScreen()" disabled>Continue</button>
+        </div>
+    </div>
+
+    <!-- Screen 14: Native Language (was 13) -->
+    <div class="screen" id="screen14">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">

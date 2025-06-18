@@ -132,4 +132,13 @@ function selectImprovementMethod(button) {
     if (continueButton) {
         continueButton.disabled = selectedButtons.length === 0;
     }
+}
+
+function selectLearningChallenge(button) {
+    button.classList.toggle('selected');
+    const selectedButtons = document.querySelectorAll('#screen13 .option-button.selected');
+    const continueButton = document.getElementById('continueBtn13');
+    if (continueButton) {
+        continueButton.disabled = selectedButtons.length === 0;
+    }
 } 
