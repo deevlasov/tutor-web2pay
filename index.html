@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor Onboarding</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="sparkle">✨</div>
+    <div class="sparkle">⭐</div>
+    <div class="sparkle">✨</div>
+    <div class="sparkle">⭐</div>
+
+    <!-- Screen 1: Welcome -->
+    <div class="screen active" id="screen1">
+        <div class="main-content">
+            <div class="product-badge">
+                <div class="trophy-icon">🏆</div>
+                <span>Product Hunt</span>
+                <strong>#1 Product of the Day</strong>
+            </div>
+
+            <h1 class="title">
+                Boost your <span class="confidence">confidence</span><br>
+                in English with AI Tutor
+            </h1>
+
+            <div class="avatar-section">
+                <div class="avatar">👩‍🦱</div>
+                <div class="speech-bubble">
+                    <div class="speech-text">Can your English surprise me? 🤔 Let's see!</div>
+                </div>
+            </div>
+
+            <div class="assessment-info">
+                <span class="star-icon">✨</span>
+                <span>Free assessment — takes just <span class="time-highlight">4 min</span></span>
+            </div>
+
+            <button class="continue-button" onclick="nextScreen()">Continue</button>
+        </div>
+    </div>
+
+    <!-- Screen 2: Frequency Question -->
+    <div class="screen" id="screen2">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 15%;"></div>
+            </div>
+        </div>
+
+        <div class="screen2-content">
+            <h1 class="question-title">
+                How often do you speak<br>
+                English in your daily life?
+            </h1>
+
+            <div class="options-container">
+                <button class="option-button" onclick="selectFrequency(this)">A few per week</button>
+                <button class="option-button" onclick="selectFrequency(this)">Every day</button>
+                <button class="option-button" onclick="selectFrequency(this)">A few per month</button>
+                <button class="option-button" onclick="selectFrequency(this)">None</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional screens... -->
+    <!-- Screen 3-14 content here -->
+
+    <script src="js/app.js"></script>
+</body>
+</html> 

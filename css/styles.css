@@ -1,0 +1,614 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.screen {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Screen 1 Styles */
+.main-content {
+    text-align: center;
+    max-width: 600px;
+    padding: 40px 20px;
+}
+
+.title {
+    font-size: 48px;
+    font-weight: 600;
+    margin-bottom: 60px;
+    line-height: 1.2;
+}
+
+.confidence {
+    color: #4a9eff;
+}
+
+.product-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 80px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.trophy-icon {
+    width: 16px;
+    height: 16px;
+    background: #ffd700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.avatar-section {
+    margin-bottom: 80px;
+    position: relative;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+}
+
+.speech-bubble {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 16px 20px;
+    border-radius: 20px;
+    position: relative;
+    display: inline-block;
+    margin-top: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.speech-bubble::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(255, 255, 255, 0.15);
+}
+
+.speech-text {
+    font-size: 16px;
+    color: #ccc;
+}
+
+.assessment-info {
+    margin-bottom: 30px;
+    color: #888;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.star-icon {
+    color: #ffd700;
+    font-size: 18px;
+}
+
+.time-highlight {
+    color: #4a9eff;
+    font-weight: 600;
+}
+
+/* Navigation */
+.top-navigation {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    width: 400px;
+    padding: 20px 0;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 10px;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button:hover {
+    color: white;
+}
+
+.progress-bar-container {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    max-width: 320px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4a9eff 0%, #6b73ff 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Content Areas */
+.screen2-content, .screen3-content {
+    text-align: center;
+    max-width: 700px;
+    padding: 40px 20px;
+    margin-top: 100px;
+}
+
+.question-title {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 60px;
+    line-height: 1.3;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 16px;
+    margin-bottom: 40px;
+    font-weight: 400;
+}
+
+/* Option Buttons */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.option-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    color: #ccc;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+}
+
+.option-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(74, 158, 255, 0.5);
+    color: white;
+}
+
+.option-button.selected {
+    background: rgba(74, 158, 255, 0.2);
+    border-color: #4a9eff;
+    color: white;
+}
+
+.option-icon-inline {
+    font-size: 18px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Multi-select styling */
+.multi-select {
+    justify-content: space-between;
+    position: relative;
+}
+
+.multi-select-indicator {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #666;
+    border-radius: 50%;
+    background: transparent;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 10px;
+    position: relative;
+}
+
+.option-button.selected .multi-select-indicator {
+    background: #4a9eff;
+    border-color: #4a9eff;
+}
+
+.option-button.selected .multi-select-indicator::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Grid Layout for Screen 3 */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    max-width: 450px;
+    margin: 0 auto 60px;
+}
+
+.option-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    color: #ccc;
+    padding: 20px 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    backdrop-filter: blur(10px);
+    position: relative;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.option-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(74, 158, 255, 0.5);
+    color: white;
+}
+
+.option-card.selected {
+    background: rgba(74, 158, 255, 0.2);
+    border-color: #4a9eff;
+    color: white;
+}
+
+.option-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.option-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.selection-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #666;
+    border-radius: 50%;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.option-card.selected .selection-indicator {
+    background: #4a9eff;
+    border-color: #4a9eff;
+}
+
+.option-card.selected .selection-indicator::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Screen 6 Agreement Styles */
+.agreement-prompt {
+    color: #888;
+    font-size: 16px;
+    margin-bottom: 40px;
+    font-weight: 400;
+}
+
+.statement-text {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 60px;
+    color: white;
+}
+
+.agreement-options {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.agreement-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    color: #ccc;
+    padding: 20px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 100px;
+    min-height: 100px;
+    justify-content: center;
+}
+
+.agreement-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(74, 158, 255, 0.5);
+    color: white;
+}
+
+.agreement-button.selected {
+    background: rgba(74, 158, 255, 0.2);
+    border-color: #4a9eff;
+    color: white;
+}
+
+.agreement-icon {
+    font-size: 24px;
+}
+
+.agreement-label {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Continue Button */
+.continue-button {
+    background: linear-gradient(135deg, #4a9eff 0%, #6b73ff 100%);
+    color: white;
+    border: none;
+    padding: 18px 60px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+}
+
+.continue-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(74, 158, 255, 0.4);
+}
+
+.continue-button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Screen 9 Statistics Animation */
+.stats-container {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 60px;
+}
+
+.stats-text {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    color: white;
+    margin-bottom: 0;
+}
+
+.highlight-purple {
+    color: #8b5cf6;
+}
+
+.highlight-green {
+    color: #22c55e;
+}
+
+.money-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.money-bill {
+    position: absolute;
+    font-size: 40px;
+    bottom: -60px;
+    animation: flyUp 3s linear 1;
+}
+
+.money-bill:nth-child(1) { left: 10%; animation-delay: 0s; }
+.money-bill:nth-child(2) { left: 20%; animation-delay: 0.4s; }
+.money-bill:nth-child(3) { left: 30%; animation-delay: 0.8s; }
+.money-bill:nth-child(4) { left: 40%; animation-delay: 1.2s; }
+.money-bill:nth-child(5) { left: 50%; animation-delay: 1.6s; }
+.money-bill:nth-child(6) { left: 60%; animation-delay: 2.0s; }
+.money-bill:nth-child(7) { left: 70%; animation-delay: 2.4s; }
+.money-bill:nth-child(8) { left: 80%; animation-delay: 2.8s; }
+
+@keyframes flyUp {
+    0% {
+        bottom: -60px;
+        opacity: 0;
+        transform: rotate(0deg);
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        bottom: 100vh;
+        opacity: 0;
+        transform: rotate(360deg);
+    }
+}
+
+.sparkle {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.3);
+    animation: twinkle 2s infinite alternate;
+}
+
+.sparkle:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+.sparkle:nth-child(2) { top: 30%; right: 20%; animation-delay: 0.5s; }
+.sparkle:nth-child(3) { bottom: 40%; left: 10%; animation-delay: 1s; }
+.sparkle:nth-child(4) { bottom: 25%; right: 15%; animation-delay: 1.5s; }
+
+@keyframes twinkle {
+    0% { opacity: 0.3; transform: scale(1); }
+    100% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* Gender Options */
+.gender-options {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+.gender-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    color: #ccc;
+    padding: 30px 40px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    position: relative;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.gender-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(74, 158, 255, 0.5);
+    color: white;
+}
+
+.gender-card.selected {
+    background: rgba(74, 158, 255, 0.2);
+    border-color: #4a9eff;
+    color: white;
+}
+
+.gender-icon {
+    font-size: 48px;
+    display: block;
+}
+
+.gender-text {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.gender-card .selection-indicator {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #666;
+    border-radius: 50%;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.gender-card.selected .selection-indicator {
+    background: #4a9eff;
+    border-color: #4a9eff;
+}
+
+.gender-card.selected .selection-indicator::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+} 
