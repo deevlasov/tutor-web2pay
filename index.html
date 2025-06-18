@@ -522,8 +522,29 @@
         </div>
     </div>
 
-    <!-- Screen 14: Native Language (was 13) -->
+    <!-- Screen 14: Speaking Feeling -->
     <div class="screen" id="screen14">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="screen2-content">
+            <h1 class="question-title">How do you feel when you need to speak English?</h1>
+            <div class="options-grid">
+                <div class="option-card" onclick="selectSpeakingFeeling(this)"><span class="option-icon">🥵</span><div class="option-text">I get anxious and start sweating</div></div>
+                <div class="option-card" onclick="selectSpeakingFeeling(this)"><span class="option-icon">🥶</span><div class="option-text">I freeze and forget words</div></div>
+                <div class="option-card" onclick="selectSpeakingFeeling(this)"><span class="option-icon">🙈</span><div class="option-text">I avoid speaking if possible</div></div>
+                <div class="option-card" onclick="selectSpeakingFeeling(this)"><span class="option-icon">😕</span><div class="option-text">I speak, but feel embarrassed</div></div>
+                <div class="option-card" onclick="selectSpeakingFeeling(this)"><span class="option-icon">😎</span><div class="option-text">I feel confident enough</div></div>
+            </div>
+            <button class="continue-button" id="continueBtn14" onclick="nextScreen()" disabled>Continue</button>
+        </div>
+    </div>
+
+    <!-- Screen 15: Native Language (was 14) -->
+    <div class="screen" id="screen15">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">

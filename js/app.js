@@ -141,4 +141,15 @@ function selectLearningChallenge(button) {
     if (continueButton) {
         continueButton.disabled = selectedButtons.length === 0;
     }
+}
+
+function selectSpeakingFeeling(card) {
+    card.closest('.options-grid').querySelectorAll('.option-card').forEach(c => {
+        c.classList.remove('selected');
+    });
+    card.classList.add('selected');
+    const continueButton = document.getElementById('continueBtn14');
+    if (continueButton) {
+        continueButton.disabled = false;
+    }
 } 
