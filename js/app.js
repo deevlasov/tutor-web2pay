@@ -86,8 +86,8 @@ function selectHardestPart(button) {
 
 function selectUsage(button) {
     button.classList.toggle('selected');
-    const selectedButtons = document.querySelectorAll('#screen9 .option-button.selected');
-    const continueButton = document.getElementById('continueBtn9');
+    const selectedButtons = document.querySelectorAll('#screen7 .option-button.selected');
+    const continueButton = document.getElementById('continueBtn7');
     if (continueButton) {
         continueButton.disabled = selectedButtons.length === 0;
     }
