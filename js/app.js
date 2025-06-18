@@ -143,7 +143,7 @@ function selectLearningChallenge(button) {
     }
 }
 
-function selectSpeakingFeeling(card) {
+window.selectSpeakingFeeling = function(card) {
     card.closest('.options-grid').querySelectorAll('.option-card').forEach(c => {
         c.classList.remove('selected');
     });
