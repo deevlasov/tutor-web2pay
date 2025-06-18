@@ -543,8 +543,28 @@
         </div>
     </div>
 
-    <!-- Screen 15: Agreement Statement 2 (moved) -->
+    <!-- Screen 15: Hardest Part (moved) -->
     <div class="screen" id="screen15">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="screen2-content">
+            <h1 class="question-title">What's the hardest part of speaking English for you?</h1>
+            <div class="options-container">
+                <button class="option-button multi-select" onclick="selectHardestPart(this)"><span class="option-icon-inline">💬</span>Starting conversations<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectHardestPart(this)"><span class="option-icon-inline">🌊</span>Maintaining natural flow<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectHardestPart(this)"><span class="option-icon-inline">💜</span>Finding right words quickly<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectHardestPart(this)"><span class="option-icon-inline">🤠</span>Understanding different accents<span class="multi-select-indicator"></span></button>
+                <button class="option-button multi-select" onclick="selectHardestPart(this)"><span class="option-icon-inline">🧠</span>Expressing complex thoughts<span class="multi-select-indicator"></span></button>
+            </div>
+            <button class="continue-button" id="continueBtn15" onclick="nextScreen()" disabled>Continue</button>
+        </div>
+    </div>
+    <!-- Screen 16: Agreement Statement 2 (shifted) -->
+    <div class="screen" id="screen16">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">
@@ -574,8 +594,8 @@
             </div>
         </div>
     </div>
-    <!-- Screen 16: Native Language (now last) -->
-    <div class="screen" id="screen16">
+    <!-- Screen 17: Native Language (now last) -->
+    <div class="screen" id="screen17">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">
