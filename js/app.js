@@ -123,4 +123,13 @@ function selectLanguage(button) {
     });
     button.classList.add('selected');
     setTimeout(() => nextScreen(), 500);
+}
+
+function selectImprovementMethod(button) {
+    button.classList.toggle('selected');
+    const selectedButtons = document.querySelectorAll('#screen12 .option-button.selected');
+    const continueButton = document.getElementById('continueBtn12');
+    if (continueButton) {
+        continueButton.disabled = selectedButtons.length === 0;
+    }
 } 
