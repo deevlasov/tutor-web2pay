@@ -670,8 +670,33 @@
             <button class="continue-button" onclick="nextScreen()">Continue</button>
         </div>
     </div>
-    <!-- Screen 20: Agreement Statement 2 (shifted) -->
+    <!-- Screen 20: Confirmation Step (new) -->
     <div class="screen" id="screen20">
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+        </div>
+        <div class="screen2-content" style="display: flex; flex-direction: column; align-items: center;">
+            <h1 style="color: #fff; font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 16px;">Are you sure?<br>It takes only 4 mins!</h1>
+            <p style="color: #ccc; font-size: 17px; text-align: center; margin-bottom: 40px;">It's quick, fun, and you'll instantly<br>know your true English level.</p>
+            <div style="margin-bottom: 40px; display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(135deg, #4a9eff 0%, #a259ff 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(74,158,255,0.15);">
+                    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f469-200d-1f4bb.png" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; background: #fff;">
+                </div>
+                <div style="margin-top: 12px; background: #23243a; color: #fff; border-radius: 16px; padding: 8px 18px; font-size: 18px; font-weight: 500; box-shadow: 0 2px 8px rgba(74,158,255,0.10); display: flex; align-items: center; gap: 8px;">
+                    4 min? Easy! <span style="font-size: 20px; margin-left: 4px;">😊</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 18px;">
+                <button class="continue-button" style="background: #23242a; color: #fff; box-shadow: none;" onclick="nextScreen()">Skip for now</button>
+                <button class="continue-button" style="background: linear-gradient(135deg, #4a9eff 0%, #6b73ff 100%); color: #fff;" onclick="nextScreen()">Let's do it!</button>
+            </div>
+        </div>
+    </div>
+    <!-- Screen 21: Agreement Statement 2 (shifted) -->
+    <div class="screen" id="screen21">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">
@@ -701,8 +726,8 @@
             </div>
         </div>
     </div>
-    <!-- Screen 21: Native Language (last) -->
-    <div class="screen" id="screen21">
+    <!-- Screen 22: Native Language (last) -->
+    <div class="screen" id="screen22">
         <div class="top-navigation">
             <button class="back-button" onclick="previousScreen()">‹</button>
             <div class="progress-bar-container">
