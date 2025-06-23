@@ -1,5 +1,8 @@
 let currentScreen = 1;
-const totalScreens = 22;
+const totalScreens = 23;
+
+let callTimer = null;
+let callTimeRemaining = 238; // 3:58 in seconds
 
 function showScreen(screenNumber) {
     // Hide all screens first
@@ -179,14 +182,24 @@ window.startCall = async function() {
         // Request microphone permission
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
-        // If permission granted, proceed to next screen
+        // If permission granted, show connecting state
         console.log('Microphone permission granted');
         
         // Stop the stream since we just needed permission
         stream.getTracks().forEach(track => track.stop());
         
-        // Proceed to next screen or call interface
-        nextScreen();
+        // Change button to "Connecting..." state
+        const startButton = document.querySelector('button[onclick="startCall()"]');
+        if (startButton) {
+            startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
+            startButton.disabled = true;
+        }
+        
+        // Simulate connection delay (2 seconds), then proceed to active call
+        setTimeout(() => {
+            nextScreen(); // Go to Screen 23 (active call)
+            startCallTimer(); // Start the countdown
+        }, 2000);
         
     } catch (error) {
         console.error('Microphone permission denied:', error);
@@ -194,6 +207,39 @@ window.startCall = async function() {
         // Show an alert or handle permission denial
         alert('Microphone permission is required for the assessment call. Please allow microphone access and try again.');
     }
+}
+
+// Function to start the call countdown timer
+function startCallTimer() {
+    const timerElement = document.getElementById('callTimer');
+    if (!timerElement) return;
+    
+    callTimer = setInterval(() => {
+        callTimeRemaining--;
+        
+        const minutes = Math.floor(callTimeRemaining / 60);
+        const seconds = callTimeRemaining % 60;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        timerElement.textContent = timeString;
+        
+        if (callTimeRemaining <= 0) {
+            clearInterval(callTimer);
+            endCall();
+        }
+    }, 1000);
+}
+
+// Function to end the call
+window.endCall = function() {
+    if (callTimer) {
+        clearInterval(callTimer);
+        callTimer = null;
+    }
+    
+    // For now, just show completion message
+    alert('Call ended. Assessment complete!');
+    // In the future, this could navigate to a results screen
 }
 
 document.addEventListener('DOMContentLoaded', function() {
