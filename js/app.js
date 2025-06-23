@@ -6,6 +6,7 @@ let callTimeRemaining = 238; // 3:58 in seconds
 
 // Define startCall function at the top level
 function startCall() {
+    alert('startCall function is working!'); // IMMEDIATE TEST
     console.log('startCall function called!');
     console.log('Current screen:', currentScreen);
     console.log('Total screens:', totalScreens);
