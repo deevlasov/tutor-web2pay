@@ -178,7 +178,11 @@ window.selectLanguageLevel = function(button) {
 
 // Function to request microphone permission and start call
 window.startCall = async function() {
+    console.log('startCall function called!'); // Debug log
+    
     try {
+        console.log('Requesting microphone permission...'); // Debug log
+        
         // Request microphone permission
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
@@ -190,13 +194,17 @@ window.startCall = async function() {
         
         // Change button to "Connecting..." state
         const startButton = document.querySelector('button[onclick="startCall()"]');
+        console.log('Found start button:', startButton); // Debug log
+        
         if (startButton) {
             startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
             startButton.disabled = true;
+            startButton.style.opacity = '0.7';
         }
         
         // Simulate connection delay (2 seconds), then proceed to active call
         setTimeout(() => {
+            console.log('Moving to next screen and starting timer'); // Debug log
             nextScreen(); // Go to Screen 23 (active call)
             startCallTimer(); // Start the countdown
         }, 2000);
@@ -208,6 +216,9 @@ window.startCall = async function() {
         alert('Microphone permission is required for the assessment call. Please allow microphone access and try again.');
     }
 }
+
+// Make sure the function is available globally
+console.log('startCall function defined:', typeof window.startCall); // Debug log
 
 // Function to start the call countdown timer
 function startCallTimer() {
@@ -258,4 +269,26 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Debug: Log when DOM is loaded and check for startCall function
+    console.log('DOM loaded, startCall available:', typeof window.startCall);
+    
+    // Add additional click listener to Start Call button as backup
+    setTimeout(() => {
+        const startCallButton = document.querySelector('button[onclick="startCall()"]');
+        if (startCallButton) {
+            console.log('Found Start Call button, adding backup click listener');
+            startCallButton.addEventListener('click', function(e) {
+                console.log('Start Call button clicked via event listener');
+                if (typeof window.startCall === 'function') {
+                    e.preventDefault();
+                    window.startCall();
+                } else {
+                    console.error('startCall function not found!');
+                }
+            });
+        } else {
+            console.log('Start Call button not found');
+        }
+    }, 1000);
 }); 
