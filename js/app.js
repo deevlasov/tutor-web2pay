@@ -7,6 +7,8 @@ let callTimeRemaining = 238; // 3:58 in seconds
 // Define startCall function at the top level
 function startCall() {
     console.log('startCall function called!');
+    console.log('Current screen:', currentScreen);
+    console.log('Total screens:', totalScreens);
     
     // Check if we're on localhost - skip microphone permission
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
@@ -25,7 +27,9 @@ function startCall() {
         // Simulate connection delay (2 seconds), then proceed to active call
         setTimeout(() => {
             console.log('Moving to next screen and starting timer');
+            console.log('Before nextScreen - currentScreen:', currentScreen);
             nextScreen(); // Go to Screen 23 (active call)
+            console.log('After nextScreen - currentScreen:', currentScreen);
             startCallTimer(); // Start the countdown
         }, 2000);
         
