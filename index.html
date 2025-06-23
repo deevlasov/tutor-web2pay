@@ -745,6 +745,44 @@
         </div>
     </div>
 
+    <!-- Screen 22: Assessment Call with Stacy -->
+    <div class="screen" id="screen22">
+        <div class="screen-number" style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.2); color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; z-index: 1000;">Screen 22</div>
+        <div class="top-navigation">
+            <button class="back-button" onclick="previousScreen()">‹</button>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <div style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); color: #fff; padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;">CC</div>
+        </div>
+        <div class="screen2-content" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 60px;">
+            <div style="margin-bottom: 30px;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); margin: 0 auto;">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616c9c0e4d3?w=200&h=200&fit=crop&crop=face" alt="Stacy" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display: none; font-size: 70px;">👩‍🦱</div>
+                </div>
+            </div>
+            
+            <h1 style="color: #fff; font-size: 24px; font-weight: 600; margin-bottom: 40px; line-height: 1.3;">Assessment Call<br>with Stacy</h1>
+            
+            <div style="margin-bottom: 30px;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background: #2d3748; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                    <span style="color: #fff; font-size: 28px; font-weight: 700;">04:00</span>
+                </div>
+            </div>
+            
+            <p style="color: #ccc; font-size: 16px; text-align: center; margin-bottom: 50px; line-height: 1.5; max-width: 320px;">4 minutes call with AI tutor to assess your<br>English and identify key growth areas.</p>
+            
+            <div style="display: flex; gap: 18px;">
+                <button class="continue-button" style="background: #23242a; color: #fff; box-shadow: none;" onclick="nextScreen()">Skip for now</button>
+                <button class="continue-button" style="background: linear-gradient(135deg, #4a9eff 0%, #6b73ff 100%); color: #fff; display: flex; align-items: center; gap: 8px;" onclick="nextScreen()">
+                    <span style="font-size: 16px;">🎙️</span>
+                    Start Call
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/app.js" defer></script>
 </body>
 </html> 
