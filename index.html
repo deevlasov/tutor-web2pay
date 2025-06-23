@@ -775,7 +775,7 @@
             
             <div style="display: flex; gap: 18px;">
                 <button class="continue-button" style="background: #23242a; color: #fff; box-shadow: none;" onclick="nextScreen()">Skip for now</button>
-                <button class="continue-button" style="background: linear-gradient(135deg, #4a9eff 0%, #6b73ff 100%); color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="startCall();">
+                <button class="continue-button" style="background: linear-gradient(135deg, #4a9eff 0%, #6b73ff 100%); color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="this.innerHTML='⏳ Connecting...'; this.disabled=true; setTimeout(() => { document.getElementById('screen22').classList.remove('active'); document.getElementById('screen23').classList.add('active'); let timer=238; let timerEl=document.getElementById('callTimer'); setInterval(() => { timer--; let min=Math.floor(timer/60); let sec=timer%60; timerEl.textContent=min.toString().padStart(2,'0')+':'+sec.toString().padStart(2,'0'); }, 1000); }, 2000);">
                     <span style="font-size: 16px;">🎙️</span>
                     Start Call
                 </button>

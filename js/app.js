@@ -6,78 +6,27 @@ let callTimeRemaining = 238; // 3:58 in seconds
 
 // Define startCall function at the top level
 function startCall() {
-    alert('startCall function is working!'); // IMMEDIATE TEST
     console.log('startCall function called!');
-    console.log('Current screen:', currentScreen);
-    console.log('Total screens:', totalScreens);
     
-    // Check if we're on localhost - skip microphone permission
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log('Running on localhost - skipping microphone permission');
-        
-        // Change button to "Connecting..." state
-        const startButton = document.querySelector('button[onclick*="startCall"]');
-        console.log('Found start button:', startButton);
-        
-        if (startButton) {
-            startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
-            startButton.disabled = true;
-            startButton.style.opacity = '0.7';
-        }
-        
-        // Simulate connection delay (2 seconds), then proceed to active call
-        setTimeout(() => {
-            console.log('Moving to next screen and starting timer');
-            console.log('Before nextScreen - currentScreen:', currentScreen);
-            
-            // Force move to Screen 23 (active call) regardless of current screen tracking
-            currentScreen = 23;
-            showScreen(23);
-            console.log('Forced move to screen 23 - currentScreen:', currentScreen);
-            
-            startCallTimer(); // Start the countdown
-        }, 2000);
-        
-        return; // Exit early for localhost
+    // Change button to "Connecting..." state immediately
+    const startButton = document.querySelector('#screen22 button[onclick*="startCall"]');
+    if (startButton) {
+        startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
+        startButton.disabled = true;
+        startButton.style.opacity = '0.7';
     }
     
-    try {
-        console.log('Requesting microphone permission...');
+    // Simulate connection delay (2 seconds), then proceed to active call
+    setTimeout(() => {
+        console.log('Moving to Screen 23 and starting countdown');
         
-        // Request microphone permission (only for HTTPS)
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(function(stream) {
-                console.log('Microphone permission granted');
-                
-                // Stop the stream since we just needed permission
-                stream.getTracks().forEach(track => track.stop());
-                
-                // Change button to "Connecting..." state
-                const startButton = document.querySelector('button[onclick*="startCall"]');
-                console.log('Found start button:', startButton);
-                
-                if (startButton) {
-                    startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
-                    startButton.disabled = true;
-                    startButton.style.opacity = '0.7';
-                }
-                
-                // Simulate connection delay (2 seconds), then proceed to active call
-                setTimeout(() => {
-                    console.log('Moving to next screen and starting timer');
-                    nextScreen(); // Go to Screen 23 (active call)
-                    startCallTimer(); // Start the countdown
-                }, 2000);
-            })
-            .catch(function(error) {
-                console.error('Microphone permission denied:', error);
-                alert('Microphone permission is required for the assessment call. Please allow microphone access and try again.');
-            });
+        // Hide Screen 22 and show Screen 23
+        document.getElementById('screen22').classList.remove('active');
+        document.getElementById('screen23').classList.add('active');
         
-    } catch (error) {
-        console.error('Error in startCall:', error);
-        alert('An error occurred. Please try again.');
-    }
+        // Start the countdown timer
+        startCallTimer();
+    }, 2000);
 }
 
 // Make it globally available
