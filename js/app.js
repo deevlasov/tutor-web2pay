@@ -28,8 +28,12 @@ function startCall() {
         setTimeout(() => {
             console.log('Moving to next screen and starting timer');
             console.log('Before nextScreen - currentScreen:', currentScreen);
-            nextScreen(); // Go to Screen 23 (active call)
-            console.log('After nextScreen - currentScreen:', currentScreen);
+            
+            // Force move to Screen 23 (active call) regardless of current screen tracking
+            currentScreen = 23;
+            showScreen(23);
+            console.log('Forced move to screen 23 - currentScreen:', currentScreen);
+            
             startCallTimer(); // Start the countdown
         }, 2000);
         
