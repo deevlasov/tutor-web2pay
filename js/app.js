@@ -8,10 +8,34 @@ let callTimeRemaining = 238; // 3:58 in seconds
 function startCall() {
     console.log('startCall function called!');
     
+    // Check if we're on localhost - skip microphone permission
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('Running on localhost - skipping microphone permission');
+        
+        // Change button to "Connecting..." state
+        const startButton = document.querySelector('button[onclick*="startCall"]');
+        console.log('Found start button:', startButton);
+        
+        if (startButton) {
+            startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
+            startButton.disabled = true;
+            startButton.style.opacity = '0.7';
+        }
+        
+        // Simulate connection delay (2 seconds), then proceed to active call
+        setTimeout(() => {
+            console.log('Moving to next screen and starting timer');
+            nextScreen(); // Go to Screen 23 (active call)
+            startCallTimer(); // Start the countdown
+        }, 2000);
+        
+        return; // Exit early for localhost
+    }
+    
     try {
         console.log('Requesting microphone permission...');
         
-        // Request microphone permission
+        // Request microphone permission (only for HTTPS)
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(function(stream) {
                 console.log('Microphone permission granted');
