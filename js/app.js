@@ -4,6 +4,52 @@ const totalScreens = 23;
 let callTimer = null;
 let callTimeRemaining = 238; // 3:58 in seconds
 
+// Define startCall function at the top level
+function startCall() {
+    console.log('startCall function called!');
+    
+    try {
+        console.log('Requesting microphone permission...');
+        
+        // Request microphone permission
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function(stream) {
+                console.log('Microphone permission granted');
+                
+                // Stop the stream since we just needed permission
+                stream.getTracks().forEach(track => track.stop());
+                
+                // Change button to "Connecting..." state
+                const startButton = document.querySelector('button[onclick*="startCall"]');
+                console.log('Found start button:', startButton);
+                
+                if (startButton) {
+                    startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
+                    startButton.disabled = true;
+                    startButton.style.opacity = '0.7';
+                }
+                
+                // Simulate connection delay (2 seconds), then proceed to active call
+                setTimeout(() => {
+                    console.log('Moving to next screen and starting timer');
+                    nextScreen(); // Go to Screen 23 (active call)
+                    startCallTimer(); // Start the countdown
+                }, 2000);
+            })
+            .catch(function(error) {
+                console.error('Microphone permission denied:', error);
+                alert('Microphone permission is required for the assessment call. Please allow microphone access and try again.');
+            });
+        
+    } catch (error) {
+        console.error('Error in startCall:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+// Make it globally available
+window.startCall = startCall;
+
 function showScreen(screenNumber) {
     // Hide all screens first
     document.querySelectorAll('.screen').forEach(screen => {
@@ -175,50 +221,6 @@ window.selectLanguageLevel = function(button) {
         continueButton.disabled = false;
     }
 }
-
-// Function to request microphone permission and start call
-window.startCall = async function() {
-    console.log('startCall function called!'); // Debug log
-    
-    try {
-        console.log('Requesting microphone permission...'); // Debug log
-        
-        // Request microphone permission
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        
-        // If permission granted, show connecting state
-        console.log('Microphone permission granted');
-        
-        // Stop the stream since we just needed permission
-        stream.getTracks().forEach(track => track.stop());
-        
-        // Change button to "Connecting..." state
-        const startButton = document.querySelector('button[onclick="startCall()"]');
-        console.log('Found start button:', startButton); // Debug log
-        
-        if (startButton) {
-            startButton.innerHTML = '<span style="font-size: 16px;">⏳</span> Connecting...';
-            startButton.disabled = true;
-            startButton.style.opacity = '0.7';
-        }
-        
-        // Simulate connection delay (2 seconds), then proceed to active call
-        setTimeout(() => {
-            console.log('Moving to next screen and starting timer'); // Debug log
-            nextScreen(); // Go to Screen 23 (active call)
-            startCallTimer(); // Start the countdown
-        }, 2000);
-        
-    } catch (error) {
-        console.error('Microphone permission denied:', error);
-        
-        // Show an alert or handle permission denial
-        alert('Microphone permission is required for the assessment call. Please allow microphone access and try again.');
-    }
-}
-
-// Make sure the function is available globally
-console.log('startCall function defined:', typeof window.startCall); // Debug log
 
 // Function to start the call countdown timer
 function startCallTimer() {
