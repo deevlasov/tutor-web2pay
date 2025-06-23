@@ -173,6 +173,29 @@ window.selectLanguageLevel = function(button) {
     }
 }
 
+// Function to request microphone permission and start call
+window.startCall = async function() {
+    try {
+        // Request microphone permission
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        // If permission granted, proceed to next screen
+        console.log('Microphone permission granted');
+        
+        // Stop the stream since we just needed permission
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Proceed to next screen or call interface
+        nextScreen();
+        
+    } catch (error) {
+        console.error('Microphone permission denied:', error);
+        
+        // Show an alert or handle permission denial
+        alert('Microphone permission is required for the assessment call. Please allow microphone access and try again.');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Attach event listeners for speaking feeling screen (screen14)
     var screen14 = document.getElementById('screen14');
