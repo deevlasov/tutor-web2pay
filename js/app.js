@@ -17,6 +17,7 @@ class RealtimeVoiceAssessment {
     this.audioSource = null;
     this.isConnected = false;
     this.isRecording = false;
+    this.conversationEnded = false;
     this.conversationHistory = [];
     this.audioChunks = [];
     this.currentResponseText = "";
@@ -121,13 +122,18 @@ class RealtimeVoiceAssessment {
   async connect() {
     try {
       const apiKey = this.getApiKey();
-      console.log({ apiKey })
+      console.log({ apiKey });
       this.updateCallStatus("Connecting to AI Tutor...", "connecting");
 
       // Check if API key is set
       if (apiKey === "replace by you ephemeral api key") {
-        this.updateCallStatus("Please set your ephemeral OpenAI API key", "error");
-        console.error("OpenAI API key not configured. Please set your ephemeral API key.");
+        this.updateCallStatus(
+          "Please set your ephemeral OpenAI API key",
+          "error",
+        );
+        console.error(
+          "OpenAI API key not configured. Please set your ephemeral API key.",
+        );
         return;
       }
 
@@ -147,16 +153,37 @@ class RealtimeVoiceAssessment {
           type: "session.update",
           session: {
             modalities: ["text", "audio"],
-            instructions: `You are Stacy, a friendly English assessment tutor. Your role is to:
-                        1. Conduct a natural, conversational English assessment
-                        2. Ask engaging questions about personal interests, experiences, and opinions
-                        3. Gradually increase complexity to assess proficiency level
-                        4. Keep the conversation flowing naturally for about 3-4 minutes
-                        5. Provide encouraging feedback and stay positive
-                        6. Focus on topics like: hobbies, travel, work, goals, problem-solving
-                        7. Do not finish with closed sentense, engage into continious conversation.
+            instructions: `
+You are Stacy, an AI English conversation partner designed to evaluate English language proficiency. Your role has two phases:
 
-                        Start by greeting the user warmly and asking them to introduce themselves.`,
+PHASE 1 - CONVERSATION PARTNER:
+- Engage in natural, friendly conversation with the user
+- Choose topics that encourage the user to speak extensively (hobbies, travel, work, opinions on current events, describing experiences, etc.)
+- Ask follow-up questions to keep the conversation flowing
+- Gradually increase complexity of your language and topics based on the user's responses
+- Be encouraging and supportive to make the user feel comfortable speaking
+- Do NOT correct mistakes during the conversation - maintain natural flow
+- Internally observe and remember:
+  * Grammar mistakes and patterns
+  * Vocabulary usage and limitations
+  * Pronunciation issues (if detectable through speech patterns)
+  * Fluency and hesitation patterns
+  * Sentence structure complexity
+  * Use of idioms, phrasal verbs, and advanced structures
+  * Accent characteristics
+  * Overall communication effectiveness
+
+PHASE 2 - EVALUATION:
+- After the conversation ends, you will receive a request to provide detailed feedback
+- Draw from your observations during the conversation to give comprehensive analysis
+
+CONVERSATION GUIDELINES:
+- Start with casual topics and gradually explore more complex themes
+- Adapt your speaking speed and complexity to slightly challenge the user
+- Encourage elaboration with questions like "Can you tell me more about that?" or "What do you think about...?"
+- Keep the conversation engaging for 4 minutes of speaking time
+- Take note of recurring errors without interrupting the flow
+`,
             voice: "alloy",
             input_audio_format: "pcm16",
             output_audio_format: "pcm16",
@@ -210,6 +237,14 @@ class RealtimeVoiceAssessment {
       console.log("Received message:", message);
     }
 
+    // Debug conversation state
+    if (this.conversationEnded && message.type.startsWith("response.")) {
+      console.log(
+        "Processing response message after conversation ended:",
+        message.type,
+      );
+    }
+
     switch (message.type) {
       case "session.created":
         console.log("Session created successfully");
@@ -237,16 +272,87 @@ class RealtimeVoiceAssessment {
       case "response.audio_transcript.delta":
         // Handle text response chunks
         this.handleTextDeltaResponse(message.delta);
+        // If conversation has ended, this is the evaluation report
+        if (this.conversationEnded) {
+          console.log("Evaluation report chunk:", message.delta);
+        }
         break;
 
       case "response.audio_transcript.done":
         // Handle text response chunks
         this.handleTextFullResponse(message.transcript);
+        // If conversation has ended, this is the complete evaluation report
+        if (this.conversationEnded) {
+          console.log("=== COMPLETE EVALUATION REPORT ===");
+          console.log(message.transcript);
+          console.log("=== END OF EVALUATION REPORT ===");
+        }
+        break;
+
+      case "response.text.delta":
+        // Handle text-only response chunks
+        if (this.conversationEnded) {
+          console.log("Evaluation report chunk:", message.delta);
+        }
+        break;
+
+      case "response.text.done":
+        // Handle complete text-only response
+        if (this.conversationEnded) {
+          console.log("=== COMPLETE EVALUATION REPORT ===");
+          console.log(message.text);
+          console.log("=== END OF EVALUATION REPORT ===");
+        }
+        break;
+
+      case "response.output_item.added":
+        // Handle when a new output item is added to the response
+        if (
+          this.conversationEnded &&
+          message.item &&
+          message.item.type === "message"
+        ) {
+          console.log("Response item added:", message.item);
+        }
+        break;
+
+      case "response.content_part.added":
+        // Handle when content parts are added
+        if (
+          this.conversationEnded &&
+          message.part &&
+          message.part.type === "text"
+        ) {
+          console.log("Text content part added:", message.part.text);
+        }
+        break;
+
+      case "response.content_part.done":
+        // Handle when content parts are completed
+        if (
+          this.conversationEnded &&
+          message.part &&
+          message.part.type === "text"
+        ) {
+          console.log("=== EVALUATION REPORT SECTION COMPLETE ===");
+          console.log(message.part.text);
+          console.log("=== END OF SECTION ===");
+        }
         break;
 
       case "response.done":
         // console.log("Received response.done:", message);
         console.log("Response completed");
+        // If conversation has ended, this is likely the evaluation report
+        if (this.conversationEnded) {
+          console.log("=== ENGLISH PROFICIENCY EVALUATION COMPLETE ===");
+          console.log(
+            "Check the transcript above for your detailed evaluation report",
+          );
+          console.log(
+            "You can now manually close the connection or continue using the app",
+          );
+        }
         break;
 
       case "error":
@@ -270,8 +376,8 @@ class RealtimeVoiceAssessment {
       if (!this.audioContext) {
         this.audioContext = new (window.AudioContext ||
           window.webkitAudioContext)({
-            sampleRate: 24000,
-          });
+          sampleRate: 24000,
+        });
       }
 
       // Reuse existing media stream source or create new one
@@ -400,7 +506,127 @@ class RealtimeVoiceAssessment {
     }
   }
 
+  async sendReportRequest() {
+    if (!this.isConnected || !this.ws) {
+      console.error("Cannot send report request: WebSocket not connected");
+      return;
+    }
+
+    console.log("Setting conversationEnded to true and sending report request");
+    this.conversationEnded = true;
+
+    const message = `
+The conversation is now complete. Please provide a comprehensive English proficiency evaluation based on our conversation. Structure your response as follows:
+
+**OVERALL PROFICIENCY LEVEL:**
+Estimate the user's English level (A1-C2 CEFR scale) with brief justification.
+
+**STRENGTHS:**
+- What the user did well
+- Areas of confident communication
+- Effective language use patterns
+
+**AREAS FOR IMPROVEMENT:**
+
+*Grammar & Syntax:*
+- Specific grammar mistakes made (with examples if possible)
+- Recurring error patterns
+- Sentence structure issues
+
+*Vocabulary & Expression:*
+- Vocabulary range and appropriateness
+- Word choice accuracy
+- Use of idiomatic expressions
+
+*Fluency & Coherence:*
+- Speaking rhythm and flow
+- Hesitation patterns
+- Ability to maintain topic coherence
+- Transition between ideas
+
+*Pronunciation & Accent:*
+- Notable pronunciation issues
+- Accent characteristics (if identifiable)
+- Clarity of speech
+- Stress and intonation patterns
+
+**SPECIFIC EXAMPLES:**
+Provide 2-3 specific examples from our conversation that illustrate key points (both strengths and areas for improvement).
+
+**RECOMMENDATIONS:**
+- Targeted practice suggestions
+- Specific skills to focus on
+- Resources or activities that would help
+
+**CONVERSATION TOPICS COVERED:**
+Brief summary of what we discussed and how well the user handled different topic types.
+
+Please be constructive, encouraging, and specific in your feedback. Focus on actionable advice that will help the user improve their English communication skills.
+`;
+
+    try {
+      const reportMessage = {
+        type: "conversation.item.create",
+        item: {
+          type: "message",
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: message,
+            },
+          ],
+        },
+      };
+
+      this.ws.send(JSON.stringify(reportMessage));
+
+      // Trigger response generation
+      const responseMessage = {
+        type: "response.create",
+        response: {
+          modalities: ["text"],
+          instructions: "Please provide the evaluation as requested.",
+        },
+      };
+
+      this.ws.send(JSON.stringify(responseMessage));
+
+      console.log("Report request sent successfully");
+      console.log("Conversation ended flag:", this.conversationEnded);
+      console.log("WebSocket connection maintained for receiving evaluation");
+    } catch (error) {
+      console.error("Failed to send report request:", error);
+    }
+  }
+
   disconnect() {
+    // Only close WebSocket if conversation hasn't ended (for backwards compatibility)
+    if (this.ws && !this.conversationEnded) {
+      this.ws.close();
+    }
+    this.stopRecording();
+
+    // Stop the audio stream
+    if (this.audioStream) {
+      this.audioStream.getTracks().forEach((track) => track.stop());
+      this.audioStream = null;
+    }
+
+    // Clean up audio source
+    if (this.audioSource) {
+      this.audioSource.disconnect();
+      this.audioSource = null;
+    }
+
+    // Only set isConnected to false if we're actually disconnecting
+    if (!this.conversationEnded) {
+      this.isConnected = false;
+    }
+  }
+
+  // New method to fully disconnect and clean up
+  fullDisconnect() {
     if (this.ws) {
       this.ws.close();
     }
@@ -419,6 +645,7 @@ class RealtimeVoiceAssessment {
     }
 
     this.isConnected = false;
+    this.conversationEnded = false;
   }
 
   toggleMute() {
@@ -677,7 +904,7 @@ function selectLearningChallenge(button) {
   }
 }
 
-window.selectSpeakingFeeling = function(card) {
+window.selectSpeakingFeeling = function (card) {
   card
     .closest(".options-grid")
     .querySelectorAll(".option-card")
@@ -691,7 +918,7 @@ window.selectSpeakingFeeling = function(card) {
   }
 };
 
-window.selectAgreement2 = function(button) {
+window.selectAgreement2 = function (button) {
   button
     .closest(".agreement-options")
     .querySelectorAll(".agreement-button")
@@ -702,7 +929,7 @@ window.selectAgreement2 = function(button) {
   setTimeout(() => nextScreen(), 500);
 };
 
-window.selectLanguageLevel = function(button) {
+window.selectLanguageLevel = function (button) {
   button
     .closest(".options-container")
     .querySelectorAll(".option-button")
@@ -738,24 +965,26 @@ function startCallTimer() {
 }
 
 // Function to end the call
-window.endCall = function() {
+window.endCall = function () {
   if (callTimer) {
     clearInterval(callTimer);
     callTimer = null;
   }
 
-  // Disconnect from AI service
+  // Send report request and keep websocket connected
   if (voiceAssessment) {
-    voiceAssessment.disconnect();
+    voiceAssessment.sendReportRequest();
   }
 
   // Show completion message
-  alert("Call ended. Assessment complete!");
+  alert(
+    "Call ended. Assessment complete! Check console for evaluation results.",
+  );
   // In the future, this could navigate to a results screen
 };
 
 // Function to toggle mute during call
-window.toggleMute = function() {
+window.toggleMute = function () {
   if (voiceAssessment) {
     voiceAssessment.toggleMute();
 
@@ -837,10 +1066,10 @@ function createWAVHeader(sampleRate, numChannels, bitsPerSample, dataLength) {
     }
   }
 
-  writeString(view, 0, 'RIFF');
+  writeString(view, 0, "RIFF");
   view.setUint32(4, 36 + dataLength, true);
-  writeString(view, 8, 'WAVE');
-  writeString(view, 12, 'fmt ');
+  writeString(view, 8, "WAVE");
+  writeString(view, 12, "fmt ");
   view.setUint32(16, 16, true);
   view.setUint16(20, 1, true);
   view.setUint16(22, numChannels, true);
@@ -848,7 +1077,7 @@ function createWAVHeader(sampleRate, numChannels, bitsPerSample, dataLength) {
   view.setUint32(28, byteRate, true);
   view.setUint16(32, blockAlign, true);
   view.setUint16(34, bitsPerSample, true);
-  writeString(view, 36, 'data');
+  writeString(view, 36, "data");
   view.setUint32(40, dataLength, true);
 
   return buffer;
@@ -859,12 +1088,12 @@ function createWAVBlob(pcmData, sampleRate, numChannels, bitsPerSample) {
     sampleRate,
     numChannels,
     bitsPerSample,
-    pcmData.byteLength
+    pcmData.byteLength,
   );
 
   const wavBuffer = new Uint8Array(wavHeader.byteLength + pcmData.byteLength);
   wavBuffer.set(new Uint8Array(wavHeader), 0);
   wavBuffer.set(new Uint8Array(pcmData), wavHeader.byteLength);
 
-  return new Blob([wavBuffer], { type: 'audio/wav' });
+  return new Blob([wavBuffer], { type: "audio/wav" });
 }
