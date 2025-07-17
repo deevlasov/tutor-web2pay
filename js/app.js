@@ -1,6 +1,9 @@
 let currentScreen = 1;
 const totalScreens = 23;
 
+const EPHEMERAL_KEY_ENDPOINT =
+  "https://dev.learniqai.com/api/v1/open-ai/get-ephemeral-key";
+
 let callTimer = null;
 let callTimeRemaining = 238; // 3:58 in seconds
 
@@ -21,10 +24,12 @@ class RealtimeVoiceAssessment {
     this.conversationHistory = [];
     this.audioChunks = [];
     this.currentResponseText = "";
+    this.finalReport = null;
+    this.reportText = "";
+    this.isWaitingForResponse = false;
+    this.isEndingCall = false;
 
-    this.setPlaceholderApiKey();
-    // Get API key from environment or use placeholder
-    this.apiKey = this.getApiKey();
+    this.clearApiKey();
 
     this.initializeAudioContext();
   }
@@ -82,15 +87,33 @@ class RealtimeVoiceAssessment {
     return await this.requestMicrophonePermission();
   }
 
-  setPlaceholderApiKey() {
-    const existing = this.getApiKey();
-    if (!existing) {
-      localStorage.setItem("openAiEK", "replace by you ephemeral api key");
-    }
+  clearApiKey() {
+    localStorage.removeItem("openAiEK");
   }
 
-  getApiKey() {
-    return localStorage.getItem("openAiEK");
+  async getApiKey() {
+    const existing = localStorage.getItem("openAiEK");
+    if (existing) return existing;
+
+    const response = await fetch(EPHEMERAL_KEY_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const key = data.key;
+
+    if (key) {
+      localStorage.setItem("openAiEK", key);
+      return key;
+    }
+
+    return key;
   }
 
   visualizeAudio() {
@@ -121,21 +144,8 @@ class RealtimeVoiceAssessment {
 
   async connect() {
     try {
-      const apiKey = this.getApiKey();
-      console.log({ apiKey });
+      const apiKey = await this.getApiKey();
       this.updateCallStatus("Connecting to AI Tutor...", "connecting");
-
-      // Check if API key is set
-      if (apiKey === "replace by you ephemeral api key") {
-        this.updateCallStatus(
-          "Please set your ephemeral OpenAI API key",
-          "error",
-        );
-        console.error(
-          "OpenAI API key not configured. Please set your ephemeral API key.",
-        );
-        return;
-      }
 
       // OpenAI Realtime API WebSocket endpoint
       const wsUrl =
@@ -143,7 +153,7 @@ class RealtimeVoiceAssessment {
 
       this.ws = new WebSocket(wsUrl, [
         "realtime",
-        "openai-insecure-api-key." + this.apiKey,
+        "openai-insecure-api-key." + apiKey,
         "openai-beta.realtime-v1",
       ]);
 
@@ -237,17 +247,14 @@ CONVERSATION GUIDELINES:
       console.log("Received message:", message);
     }
 
-    // Debug conversation state
-    if (this.conversationEnded && message.type.startsWith("response.")) {
-      console.log(
-        "Processing response message after conversation ended:",
-        message.type,
-      );
-    }
-
     switch (message.type) {
       case "session.created":
         console.log("Session created successfully");
+        break;
+
+      case "response.created":
+        console.log("Response generation started");
+        this.isWaitingForResponse = true;
         break;
 
       case "conversation.item.input_audio_transcription.completed":
@@ -255,6 +262,19 @@ CONVERSATION GUIDELINES:
         if (message.transcript) {
           this.addTranscript("You", message.transcript);
         }
+        break;
+
+      case "input_audio_buffer.speech_started":
+        console.log("Speech started");
+        break;
+
+      case "input_audio_buffer.speech_stopped":
+        console.log("Speech stopped");
+        break;
+
+      case "input_audio_buffer.committed":
+        console.log("Audio buffer committed - response will be generated");
+        this.isWaitingForResponse = true;
         break;
 
       case "response.audio.delta":
@@ -275,6 +295,7 @@ CONVERSATION GUIDELINES:
         // If conversation has ended, this is the evaluation report
         if (this.conversationEnded) {
           console.log("Evaluation report chunk:", message.delta);
+          this.reportText += message.delta;
         }
         break;
 
@@ -286,6 +307,8 @@ CONVERSATION GUIDELINES:
           console.log("=== COMPLETE EVALUATION REPORT ===");
           console.log(message.transcript);
           console.log("=== END OF EVALUATION REPORT ===");
+          const reportText = message.transcript || this.reportText;
+          this.finalReport = this.parseJsonReport(reportText);
         }
         break;
 
@@ -293,15 +316,19 @@ CONVERSATION GUIDELINES:
         // Handle text-only response chunks
         if (this.conversationEnded) {
           console.log("Evaluation report chunk:", message.delta);
+          this.reportText += message.delta;
         }
         break;
 
       case "response.text.done":
         // Handle complete text-only response
+        // If conversation has ended, this is the complete evaluation report
         if (this.conversationEnded) {
           console.log("=== COMPLETE EVALUATION REPORT ===");
           console.log(message.text);
           console.log("=== END OF EVALUATION REPORT ===");
+          const reportText = message.text || this.reportText;
+          this.finalReport = this.parseJsonReport(reportText);
         }
         break;
 
@@ -337,22 +364,28 @@ CONVERSATION GUIDELINES:
           console.log("=== EVALUATION REPORT SECTION COMPLETE ===");
           console.log(message.part.text);
           console.log("=== END OF SECTION ===");
+          const reportText = message.part.text || this.reportText;
+          this.finalReport = this.parseJsonReport(reportText);
         }
         break;
 
       case "response.done":
         // console.log("Received response.done:", message);
         console.log("Response completed");
+        this.isWaitingForResponse = false;
         // If conversation has ended, this is likely the evaluation report
         if (this.conversationEnded) {
           console.log("=== ENGLISH PROFICIENCY EVALUATION COMPLETE ===");
-          console.log(
-            "Check the transcript above for your detailed evaluation report",
-          );
-          console.log(
-            "You can now manually close the connection or continue using the app",
+          this.updateCallUI(
+            "Assessment Complete!",
+            "Your English proficiency report is ready",
           );
         }
+        break;
+
+      case "response.cancelled":
+        console.log("Response cancelled");
+        this.isWaitingForResponse = false;
         break;
 
       case "error":
@@ -376,8 +409,8 @@ CONVERSATION GUIDELINES:
       if (!this.audioContext) {
         this.audioContext = new (window.AudioContext ||
           window.webkitAudioContext)({
-          sampleRate: 24000,
-        });
+            sampleRate: 24000,
+          });
       }
 
       // Reuse existing media stream source or create new one
@@ -514,54 +547,67 @@ CONVERSATION GUIDELINES:
 
     console.log("Setting conversationEnded to true and sending report request");
     this.conversationEnded = true;
+    this.reportText = ""; // Reset report text accumulation
 
     const message = `
-The conversation is now complete. Please provide a comprehensive English proficiency evaluation based on our conversation. Structure your response as follows:
+The conversation is now complete. Please provide a comprehensive English proficiency evaluation based on our conversation.
 
-**OVERALL PROFICIENCY LEVEL:**
-Estimate the user's English level (A1-C2 CEFR scale) with brief justification.
+IMPORTANT: Respond with ONLY a valid JSON object. Do not include any additional text, explanations, or formatting. The response must be parseable by JSON.parse().
 
-**STRENGTHS:**
-- What the user did well
-- Areas of confident communication
-- Effective language use patterns
+Use this exact JSON structure:
+{
+  "overallProficiencyLevel": {
+    "level": "A1|A2|B1|B2|C1|C2",
+    "justification": "Brief explanation of level assessment"
+  },
+  "strengths": [
+    "What the user did well",
+    "Areas of confident communication",
+    "Effective language use patterns"
+  ],
+  "areasForImprovement": {
+    "grammarAndSyntax": [
+      "Specific grammar mistakes with examples",
+      "Recurring error patterns",
+      "Sentence structure issues"
+    ],
+    "vocabularyAndExpression": [
+      "Vocabulary range and appropriateness",
+      "Word choice accuracy",
+      "Use of idiomatic expressions"
+    ],
+    "fluencyAndCoherence": [
+      "Speaking rhythm and flow",
+      "Hesitation patterns",
+      "Ability to maintain topic coherence",
+      "Transition between ideas"
+    ],
+    "pronunciationAndAccent": [
+      "Notable pronunciation issues",
+      "Accent characteristics",
+      "Clarity of speech",
+      "Stress and intonation patterns"
+    ]
+  },
+  "specificExamples": [
+    {
+      "type": "strength|improvement",
+      "example": "Specific example from conversation",
+      "analysis": "Why this illustrates the point"
+    }
+  ],
+  "recommendations": [
+    "Targeted practice suggestions",
+    "Specific skills to focus on",
+    "Resources or activities that would help"
+  ],
+  "conversationTopics": {
+    "topicsCovered": ["list of topics discussed"],
+    "handlingAssessment": "How well user handled different topic types"
+  }
+}
 
-**AREAS FOR IMPROVEMENT:**
-
-*Grammar & Syntax:*
-- Specific grammar mistakes made (with examples if possible)
-- Recurring error patterns
-- Sentence structure issues
-
-*Vocabulary & Expression:*
-- Vocabulary range and appropriateness
-- Word choice accuracy
-- Use of idiomatic expressions
-
-*Fluency & Coherence:*
-- Speaking rhythm and flow
-- Hesitation patterns
-- Ability to maintain topic coherence
-- Transition between ideas
-
-*Pronunciation & Accent:*
-- Notable pronunciation issues
-- Accent characteristics (if identifiable)
-- Clarity of speech
-- Stress and intonation patterns
-
-**SPECIFIC EXAMPLES:**
-Provide 2-3 specific examples from our conversation that illustrate key points (both strengths and areas for improvement).
-
-**RECOMMENDATIONS:**
-- Targeted practice suggestions
-- Specific skills to focus on
-- Resources or activities that would help
-
-**CONVERSATION TOPICS COVERED:**
-Brief summary of what we discussed and how well the user handled different topic types.
-
-Please be constructive, encouraging, and specific in your feedback. Focus on actionable advice that will help the user improve their English communication skills.
+Remember: Respond with ONLY the JSON object, no additional text.
 `;
 
     try {
@@ -586,10 +632,12 @@ Please be constructive, encouraging, and specific in your feedback. Focus on act
         type: "response.create",
         response: {
           modalities: ["text"],
-          instructions: "Please provide the evaluation as requested.",
+          instructions:
+            "You must respond with ONLY a valid JSON object. Do not include any additional text, explanations, markdown formatting, or code blocks. The response must be parseable by JSON.parse(). Start directly with { and end with }.",
         },
       };
 
+      this.isWaitingForResponse = true;
       this.ws.send(JSON.stringify(responseMessage));
 
       console.log("Report request sent successfully");
@@ -656,6 +704,174 @@ Please be constructive, encouraging, and specific in your feedback. Focus on act
       this.startRecording();
       this.updateCallStatus("Recording - Speak now", "recording");
     }
+  }
+
+  parseJsonReport(reportText) {
+    if (!reportText || typeof reportText !== "string") {
+      return {
+        error: "No report text provided",
+        rawText: reportText,
+      };
+    }
+
+    // Clean up the text - remove any markdown formatting or extra whitespace
+    let cleanedText = reportText.trim();
+
+    // Find JSON object boundaries
+    const jsonStart = cleanedText.indexOf("{");
+    const jsonEnd = cleanedText.lastIndexOf("}");
+
+    if (jsonStart === -1 || jsonEnd === -1) {
+      console.error("No JSON object found in report");
+      return {
+        error: "No JSON object found in report",
+        rawText: reportText,
+      };
+    }
+
+    // Extract just the JSON part
+    const jsonText = cleanedText.substring(jsonStart, jsonEnd + 1);
+
+    try {
+      const parsedReport = JSON.parse(jsonText);
+      console.log("Successfully parsed JSON report:", parsedReport);
+      return parsedReport;
+    } catch (error) {
+      console.error("Failed to parse report as JSON:", error);
+      console.error("Attempted to parse:", jsonText);
+      return {
+        error: "Failed to parse report as JSON",
+        parseError: error.message,
+        rawText: reportText,
+        attemptedJson: jsonText,
+      };
+    }
+  }
+
+  async endCallSafely() {
+    if (this.isEndingCall) {
+      console.log("Call ending already in progress");
+      return;
+    }
+
+    this.isEndingCall = true;
+    console.log("Starting safe call ending process");
+
+    try {
+      // Stop recording immediately
+      if (this.isRecording) {
+        this.stopRecording();
+        console.log("Recording stopped");
+      }
+
+      // Update call status and UI
+      this.updateCallStatus("Processing conversation...", "processing");
+      this.updateCallUI(
+        "Ending call...",
+        "Please wait while we process your conversation",
+      );
+
+      // Wait for any pending responses to complete
+      console.log("Waiting for pending responses to complete...");
+      let waitTime = 0;
+      const maxWaitTime = 10000; // 10 seconds max
+      const checkInterval = 500; // Check every 500ms
+
+      while (this.isWaitingForResponse && waitTime < maxWaitTime) {
+        await new Promise((resolve) => setTimeout(resolve, checkInterval));
+        waitTime += checkInterval;
+        console.log(`Waiting... ${waitTime}ms`);
+
+        // Check if WebSocket is still connected
+        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+          console.log("WebSocket disconnected, stopping wait");
+          break;
+        }
+
+        // Update UI with progress
+        const progress = Math.min((waitTime / maxWaitTime) * 50, 50);
+        this.updateCallUI(
+          "Waiting for responses...",
+          `${Math.round(progress)}% complete`,
+        );
+      }
+
+      if (waitTime >= maxWaitTime) {
+        console.log("Max wait time reached, proceeding with report request");
+      } else {
+        console.log("All responses completed, proceeding with report request");
+      }
+
+      // Additional safety delay with progress feedback
+      this.updateCallUI("Preparing assessment...", "Almost ready...");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Check WebSocket connection before requesting report
+      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+        console.error("WebSocket disconnected, cannot request report");
+        this.updateCallStatus("Connection lost", "error");
+        this.updateCallUI("Connection lost", "Unable to generate report");
+        return;
+      }
+
+      // Now request the report
+      console.log("Requesting final report...");
+      this.updateCallStatus("Generating assessment report...", "generating");
+      this.updateCallUI(
+        "Generating report...",
+        "Creating your personalized assessment",
+      );
+      this.sendReportRequest();
+    } catch (error) {
+      console.error("Error during call ending process:", error);
+      this.updateCallStatus("Error ending call", "error");
+      this.updateCallUI("Error", "Something went wrong. Please try again.");
+      this.isEndingCall = false;
+    }
+  }
+
+  updateCallUI(title, message) {
+    // Update call screen UI elements
+    const callTitle = document.querySelector("#screen23 h2");
+    const callMessage = document.querySelector("#screen23 .call-message");
+
+    if (callTitle) {
+      callTitle.textContent = title;
+    }
+
+    if (callMessage) {
+      callMessage.textContent = message;
+    } else {
+      // Create message element if it doesn't exist
+      const messageElement = document.createElement("div");
+      messageElement.className = "call-message";
+      messageElement.textContent = message;
+      messageElement.style.cssText =
+        "margin-top: 20px; font-size: 14px; color: #666; text-align: center;";
+
+      const screen23 = document.getElementById("screen23");
+      if (screen23) {
+        screen23.appendChild(messageElement);
+      }
+    }
+  }
+
+  isValidReport() {
+    return this.finalReport && !this.finalReport.error;
+  }
+
+  getFinalReport() {
+    return this.finalReport;
+  }
+
+  getFinalReportRawText() {
+    return this.finalReport && this.finalReport.rawText
+      ? this.finalReport.rawText
+      : null;
+  }
+
+  isReportReady() {
+    return this.finalReport !== null;
   }
 }
 
@@ -904,7 +1120,7 @@ function selectLearningChallenge(button) {
   }
 }
 
-window.selectSpeakingFeeling = function (card) {
+window.selectSpeakingFeeling = function(card) {
   card
     .closest(".options-grid")
     .querySelectorAll(".option-card")
@@ -918,7 +1134,7 @@ window.selectSpeakingFeeling = function (card) {
   }
 };
 
-window.selectAgreement2 = function (button) {
+window.selectAgreement2 = function(button) {
   button
     .closest(".agreement-options")
     .querySelectorAll(".agreement-button")
@@ -929,7 +1145,7 @@ window.selectAgreement2 = function (button) {
   setTimeout(() => nextScreen(), 500);
 };
 
-window.selectLanguageLevel = function (button) {
+window.selectLanguageLevel = function(button) {
   button
     .closest(".options-container")
     .querySelectorAll(".option-button")
@@ -965,26 +1181,25 @@ function startCallTimer() {
 }
 
 // Function to end the call
-window.endCall = function () {
+window.endCall = async function() {
   if (callTimer) {
     clearInterval(callTimer);
     callTimer = null;
   }
 
-  // Send report request and keep websocket connected
+  // Use safe call ending process
   if (voiceAssessment) {
-    voiceAssessment.sendReportRequest();
+    try {
+      await voiceAssessment.endCallSafely();
+    } catch (error) {
+      console.error("Error ending call:", error);
+      alert("Error ending call. Please check the console for details.");
+    }
   }
-
-  // Show completion message
-  alert(
-    "Call ended. Assessment complete! Check console for evaluation results.",
-  );
-  // In the future, this could navigate to a results screen
 };
 
 // Function to toggle mute during call
-window.toggleMute = function () {
+window.toggleMute = function() {
   if (voiceAssessment) {
     voiceAssessment.toggleMute();
 
@@ -999,49 +1214,22 @@ window.toggleMute = function () {
   }
 };
 
-// document.addEventListener("DOMContentLoaded", function() {
-//   // Attach event listeners for speaking feeling screen (screen14)
-//   var screen14 = document.getElementById("screen14");
-//   if (screen14) {
-//     var cards = screen14.querySelectorAll(".option-card");
-//     cards.forEach(function(card) {
-//       card.addEventListener("click", function() {
-//         cards.forEach(function(c) {
-//           c.classList.remove("selected");
-//         });
-//         card.classList.add("selected");
-//         var continueButton = document.getElementById("continueBtn14");
-//         if (continueButton) {
-//           continueButton.disabled = false;
-//         }
-//       });
-//     });
-//   }
+// Global functions to access final report
+window.getFinalReport = function() {
+  return voiceAssessment ? voiceAssessment.getFinalReport() : null;
+};
 
-//   // Debug: Log when DOM is loaded and check for startCall function
-//   console.log("DOM loaded, startCall available:", typeof window.startCall);
+window.getFinalReportRawText = function() {
+  return voiceAssessment ? voiceAssessment.getFinalReportRawText() : null;
+};
 
-//   // Add additional click listener to Start Call button as backup
-//   setTimeout(() => {
-//     const startCallButton = document.querySelector(
-//       'button[onclick="startCall()"]',
-//     );
-//     if (startCallButton) {
-//       console.log("Found Start Call button, adding backup click listener");
-//       startCallButton.addEventListener("click", function(e) {
-//         console.log("Start Call button clicked via event listener");
-//         if (typeof window.startCall === "function") {
-//           e.preventDefault();
-//           window.startCall();
-//         } else {
-//           console.error("startCall function not found!");
-//         }
-//       });
-//     } else {
-//       console.log("Start Call button not found");
-//     }
-//   }, 1000);
-// });
+window.isReportReady = function() {
+  return voiceAssessment ? voiceAssessment.isReportReady() : false;
+};
+
+window.isValidReport = function() {
+  return voiceAssessment ? voiceAssessment.isValidReport() : false;
+};
 
 function base64ToArrayBuffer(base64) {
   const binaryString = atob(base64);
