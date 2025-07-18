@@ -23,7 +23,6 @@ class RealtimeVoiceAssessment {
     this.conversationEnded = false;
     this.conversationHistory = [];
     this.audioChunks = [];
-    this.currentResponseText = "";
     this.finalReport = null;
     this.reportText = "";
     this.isWaitingForResponse = false;
@@ -197,10 +196,7 @@ CONVERSATION GUIDELINES:
             voice: "alloy",
             input_audio_format: "pcm16",
             output_audio_format: "pcm16",
-            input_audio_transcription: {
-              language: "en",
-              model: "whisper-1",
-            },
+
             turn_detection: {
               // type: "semantic_vad",
               // eagerness: "low",
@@ -257,13 +253,6 @@ CONVERSATION GUIDELINES:
         this.isWaitingForResponse = true;
         break;
 
-      case "conversation.item.input_audio_transcription.completed":
-        // console.log("conversation.item.input_audio_transcription.completed", message);
-        if (message.transcript) {
-          this.addTranscript("You", message.transcript);
-        }
-        break;
-
       case "input_audio_buffer.speech_started":
         console.log("Speech started");
         break;
@@ -290,8 +279,6 @@ CONVERSATION GUIDELINES:
         break;
 
       case "response.audio_transcript.delta":
-        // Handle text response chunks
-        this.handleTextDeltaResponse(message.delta);
         // If conversation has ended, this is the evaluation report
         if (this.conversationEnded) {
           console.log("Evaluation report chunk:", message.delta);
@@ -300,9 +287,7 @@ CONVERSATION GUIDELINES:
         break;
 
       case "response.audio_transcript.done":
-        // Handle text response chunks
-        this.handleTextFullResponse(message.transcript);
-        // If conversation has ended, this is the complete evaluation report
+        // Handle complete audio transcript response
         if (this.conversationEnded) {
           console.log("=== COMPLETE EVALUATION REPORT ===");
           console.log(message.transcript);
@@ -409,8 +394,8 @@ CONVERSATION GUIDELINES:
       if (!this.audioContext) {
         this.audioContext = new (window.AudioContext ||
           window.webkitAudioContext)({
-            sampleRate: 24000,
-          });
+          sampleRate: 24000,
+        });
       }
 
       // Reuse existing media stream source or create new one
@@ -503,25 +488,6 @@ CONVERSATION GUIDELINES:
       });
     } catch (error) {
       console.error("Failed to play audio:", error);
-    }
-  }
-
-  handleTextDeltaResponse(textDelta) {
-    this.currentResponseText += textDelta;
-  }
-
-  handleTextFullResponse(text) {
-    this.addTranscript("Stacy", text);
-  }
-
-  addTranscript(speaker, text) {
-    const transcriptElement = document.getElementById("callTranscript");
-    if (transcriptElement) {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `transcript-message ${speaker.toLowerCase() === "you" ? "user" : "assistant"}`;
-      messageDiv.innerHTML = `<strong>${speaker}:</strong> ${text}`;
-      transcriptElement.appendChild(messageDiv);
-      transcriptElement.scrollTop = transcriptElement.scrollHeight;
     }
   }
 
@@ -1120,7 +1086,7 @@ function selectLearningChallenge(button) {
   }
 }
 
-window.selectSpeakingFeeling = function(card) {
+window.selectSpeakingFeeling = function (card) {
   card
     .closest(".options-grid")
     .querySelectorAll(".option-card")
@@ -1134,7 +1100,7 @@ window.selectSpeakingFeeling = function(card) {
   }
 };
 
-window.selectAgreement2 = function(button) {
+window.selectAgreement2 = function (button) {
   button
     .closest(".agreement-options")
     .querySelectorAll(".agreement-button")
@@ -1145,7 +1111,7 @@ window.selectAgreement2 = function(button) {
   setTimeout(() => nextScreen(), 500);
 };
 
-window.selectLanguageLevel = function(button) {
+window.selectLanguageLevel = function (button) {
   button
     .closest(".options-container")
     .querySelectorAll(".option-button")
@@ -1181,7 +1147,7 @@ function startCallTimer() {
 }
 
 // Function to end the call
-window.endCall = async function() {
+window.endCall = async function () {
   if (callTimer) {
     clearInterval(callTimer);
     callTimer = null;
@@ -1199,7 +1165,7 @@ window.endCall = async function() {
 };
 
 // Function to toggle mute during call
-window.toggleMute = function() {
+window.toggleMute = function () {
   if (voiceAssessment) {
     voiceAssessment.toggleMute();
 
@@ -1215,19 +1181,19 @@ window.toggleMute = function() {
 };
 
 // Global functions to access final report
-window.getFinalReport = function() {
+window.getFinalReport = function () {
   return voiceAssessment ? voiceAssessment.getFinalReport() : null;
 };
 
-window.getFinalReportRawText = function() {
+window.getFinalReportRawText = function () {
   return voiceAssessment ? voiceAssessment.getFinalReportRawText() : null;
 };
 
-window.isReportReady = function() {
+window.isReportReady = function () {
   return voiceAssessment ? voiceAssessment.isReportReady() : false;
 };
 
-window.isValidReport = function() {
+window.isValidReport = function () {
   return voiceAssessment ? voiceAssessment.isValidReport() : false;
 };
 
